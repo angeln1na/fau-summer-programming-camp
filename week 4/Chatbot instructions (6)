@@ -1,0 +1,47 @@
+Chatbot with training
+
+1. Make a new Jupyter Notebook name it Chatbot.ipynb
+
+2. Open terminal and install these commands       !pip install chatterbot 
+
+!pip install chatterbot_corpus
+
+3. create a new code cell and type this at the top
+
+from chatterbot import ChatBot
+from chatterbot.trainers import ListTrainer
+import random
+
+4. Create a variable bot that is set to ChatBot then create a name for your bot by placing parenthesis next to ChatBot and the name inside ''
+
+5. create another variable trainer setting it equal to ListenTrainer with open/closed parentheses placing bot inside 
+
+6. In this line you will be creating the training data creating a variable training_data equal to an array inside this array create a conversation line by line example 'hi', 'hello' create a full conversation that contains the user and the bots response. The conversation can be anything. Just be sure to separate them by each line with comas and make the conversation make sense. Example: asking what to do on a weekend
+
+7. Now you will Shuffle the training data randomly
+you will be calling random since it was imported and attaching the 2 words by a period to append it then have an open/close parentheses and place training_data inside
+
+8. Now you wil Train the bot using the shuffled training data by appending trainer to train and placing an open/close parentheses and place training_data inside
+
+9. Get a response to the input text 'I would like to book a flight.' create a variable for response set it equal to bot and append it to get_response with open/close parentheses and 'I have a complaint' inside
+
+10. Write a print statement where the "Bot Response: " is always returned with the variable response
+
+11. Create a variable name and set it equal to input where the user can enter their name.
+
+12. Write a print statement that says Welcome to the Bot Service! Let me know how I can help you?
+
+13. Write a while loop starting with while true
+
+14. inside the while loop write an if statement where you create a variable for request and set it equal to 'Bye' and compare it to another request 'bye'
+
+15. inside that if statement print the Bot saying bye then write a break underneathe 
+
+16. write an else statement to the same level of the if statement 
+
+17. inside the else set response equal to bot and append it to get_response then pass request 
+
+18. print Bot and pass bots response
+
+
+

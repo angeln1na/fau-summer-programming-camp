@@ -1,0 +1,222 @@
+#Import the necessary libraries:
+
+
+  #1. Import the random** library: This library provides functions for generating random numbers.
+  #2. Import the numpy** library and alias it as np: This library provides support for working with arrays and mathematical operations.
+        
+  #3. Import the matplotlib.pyplot library and alias it  as plt: This library allows you to create visualizations, such as plots and graphs.
+       
+  #4. **Import the matplotlib.cm** library and alias it **as cm**: This library provides color maps for visualizations.
+       
+  #5. **Import the FuncAnimation** class from the **matplotlib.animation** library: This class allows you to create animations using matplotlib.
+
+
+  #6. Define a class Node (): 
+        #7. Inside the class, define the __ init__ method: The __ init__ method should have two parameters: self, parent equal to none,  and position equal to none inside the parentheses:
+
+            #8. Then initialize the attributes by appending self to parent and setting it equal to parent
+
+            #9. append self to position and set it equal to position
+
+            #10. Set self.g, self.h, and self.f: Set them to 0.
+
+        #11. define __ eq __ passing two parameters self and other inside parantheses:
+          #12. return self appending to position that is equal equal to other appending to positon
+
+        #13. define __ hash __ passing 1 parameter self inside parantheses:
+          #14. return hash inside parentheses have self append to position inside
+
+    def InformedSearch(maze, start, end, method='Astar'):
+    """Returns a list of tuples as a path from the given start to the given end in the given maze"""
+
+    # Create start and end node
+    
+    #15 Make a variable start_node and set it equal to Node that passes 2 parameters None and start
+   
+    
+    #16 Make a variable start_node.g and set it equal to start_node.h that is equal to start_node.f equal to 0
+    
+    
+    #17 Make a variable end_node set it equal to Node that passes two parameters None and end
+
+    
+    #18. Make a variable end_node.g set equal to end_node.h equal to end_node.f equal to 0
+ 
+
+    # Initialize both open and closed list
+    
+    #19. Make a variable open_list and set it equal to an empty array
+   
+    
+    
+    #20. Make a variable closed_list and set it equal to set with an empt paramameter
+                  # <-- closed_list must be a set
+
+
+    # Add the start node
+    
+    #21. Make a variable for open_list .append to the parameter start_node
+    
+
+    # Loop until you find the end
+    expanded_nodes=0
+    queue_size=0 
+    
+    
+    #22 Make a while loop statement where length of the parameter open_list  is greater than 0: 
+    
+
+        # Get the current node
+        current_node = open_list[0]
+        current_index = 0
+        for index, item in enumerate(open_list):
+            if item.f < current_node.f:
+                current_node = item
+                current_index = index
+
+        # Pop current off open list, add to closed list
+        open_list.pop(current_index)
+        closed_list.add(current_node)     # <-- change append to add
+
+        # Found the goal
+        if current_node == end_node:
+            path = []
+            current = current_node
+            while current is not None:
+                path.append(current.position)
+                current = current.parent
+                
+            # Create a list of x and y coordinates for each position in the path
+            path_x = [pos[1] for pos in path]
+            path_y = [pos[0] for pos in path]
+
+            # Reverse the path coordinates
+            path_x = path_x[::-1]
+            path_y = path_y[::-1]
+        
+            # Return the expanded nodes, queue size, and path
+            return expanded_nodes, queue_size, path, path_x, path_y
+        # update expanded nodes, and update maximum queuze size 
+        expanded_nodes=expanded_nodes+1
+        if(len(open_list)>queue_size):
+            queue_size=len(open_list)  # check maximum queue size
+        
+        # Generate children
+        children = []
+        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
+
+            # Get node position
+            node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
+
+            # Make sure within range
+            if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) -1) or node_position[1] < 0:
+                continue
+
+            # Make sure walkable terrain
+            if maze[node_position[0]][node_position[1]] != 0:
+                continue
+
+            # Create new node
+            new_node = Node(current_node, node_position)
+
+            # Append
+            children.append(new_node)
+
+        # Loop through children
+        for child in children:
+
+            # Child is on the closed list
+            if child in closed_list:              # <-- remove inner loop so continue takes you to the end of the outer loop
+                continue
+
+            # Create the f, g, and h values
+            child.g = current_node.g + np.sqrt(np.square(child.position[0] - current_node.position[0])+np.square(child.position[1] - current_node.position[1]))
+            child.h = np.sqrt(np.square(child.position[0] - end_node.position[0])+np.square(child.position[1] - end_node.position[1]))
+            if method=='AStar':
+                child.f = child.g + child.h
+            elif method=='GBF':
+                child.f=child.h
+            elif method=='UCS':
+                child.f=child.g              
+            
+
+            # Child is already in the open list
+            childAlreadyExist=False
+            for open_node in open_list:
+                if child == open_node and child.g >=open_node.g:
+                    childAlreadyExist=True
+                    break
+
+            # Add the child to the open list if Chinld not in the open list
+            if(not childAlreadyExist):
+                open_list.append(child)
+
+def pathLength(path):
+    dis=0
+    for i in range(len(path)-1):
+        x1=path[i][0]
+        y1=path[i][1]
+        x2=path[i+1][0]
+        y2=path[i+1][1]
+        dis=dis+np.sqrt(np.square(x1-x2)+np.square(y1-y2))
+    return(dis)
+
+# searchMethod: 'AStar' or 'GBF' or 'UCS'
+def mazeRunner(start,end,maze,searchMethod='AStar'):
+    #force start and end positions to be reachable.
+    maze[start[0]][start[1]]=0 
+    maze[end[0]][end[1]]=0
+    expanded_nodes,queue_size,path, path_x, path_y= InformedSearch(maze, start, end, searchMethod)  # 'AStar' or 'GBF' or 'UCS'
+    print("\r\n%s search path length: %f"%(searchMethod,pathLength(path)))
+    
+     # Create a figure and axis
+    fig, ax = plt.subplots(figsize=(6, 7))  # Adjust the figsize as needed
+
+    # Plot the maze
+    ax.imshow(maze, cmap=cm.binary)
+    ax.text(0, -0.1, "Expanded nodes: %d" % expanded_nodes, transform=ax.transAxes)
+    ax.text(0, -0.15, "Queue size: %d" % queue_size, transform=ax.transAxes)
+    
+    # Plot the start and end positions
+    ax.scatter(start[1], start[0], color='green', marker='o', label='Start')
+    ax.scatter(end[1], end[0], color='red', marker='o', label='End')
+
+    # Create an empty path plot
+    path_line, = ax.plot([], [], color='blue', linewidth=2, label='Path')
+
+    # Set the legend
+    ax.legend()
+    
+    # Set the title
+    ax.set_title(searchMethod + ' Search')
+
+    def update(frame):
+        # Animate the path
+        path_line.set_data(path_x[:frame], path_y[:frame])
+
+    # Animate the path using FuncAnimation
+    ani = FuncAnimation(fig, update, frames=len(path_x)+1, interval=200, blit=False)
+    
+    # # Show the plot
+    plt.show()
+    
+    return(expanded_nodes,queue_size,path)
+
+# YOU CAN CHANGE THE OBSTACLE OF THE MAZE BY CHANGING 0's to 1's
+maze = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+        [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+start = (0, 0)
+end = (9, 9)
+print(mazeRunner(start,end,maze,'AStar'))
+print(mazeRunner(start,end,maze,'GBF'))
+print(mazeRunner(start,end,maze,'UCS'))
+
+
